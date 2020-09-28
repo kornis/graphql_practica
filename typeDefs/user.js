@@ -20,8 +20,14 @@ type Task {
     user: User!
 }
 
+input createUserInput {
+    email: String!
+    name: String!
+    password: String!
+}
 
 extend type Mutation {
     createUser(input: createUserInput): User,
 }
+
 `

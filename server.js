@@ -7,7 +7,7 @@ const resolvers = require('./resolvers');
 const typeDefs = require('./typeDefs');
 const { connection } = require('./database/util');
 
-require('dotenv').config();
+
 
 //body parser json
 app.use(express.json());

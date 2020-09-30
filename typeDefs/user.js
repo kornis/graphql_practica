@@ -11,6 +11,8 @@ type User {
     name: String!
     email: String!
     task: [Task!]
+    updatedAt: Date!
+    createdAt: Date!
 }
 
 type Task {
@@ -26,8 +28,18 @@ input createUserInput {
     password: String!
 }
 
+input loginInput {
+    email: String!
+    password: String!
+}
+
+type Token {
+    token: String!
+}
+
 extend type Mutation {
     createUser(input: createUserInput): User,
+    login(input: loginInput): Token
 }
 
 `

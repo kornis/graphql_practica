@@ -1,10 +1,13 @@
 const { users, tasks } = require('../constants');
 const User = require('../database/models/user');
 const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 
 module.exports = { 
     Query: {
-    getUsers: () => users,
+    getUsers: (_,__, {name}) => {
+        console.log(name);
+        return users },
     getUser: (_, { id }) => users.find(user => user.id === id),
 
     },
@@ -22,7 +25,7 @@ Mutation: {
                 throw new Error("email already in use");
             }
             const hashedPassword = bcrypt.hashSync(input.password, 12);
-            const newUser = new User({ ...input, hashedPassword });
+            const newUser = new User({ ...input, password: hashedPassword });
             const result = await newUser.save();
             return result;
         }
@@ -31,6 +34,24 @@ Mutation: {
             throw error;
         }
         
+    },
+    login: async (_, { input }) => {
+        try{
+            const user = await User.findOne({ email: input.email });
+            if (!user){
+                throw new Error('Email not found');
+            }
+            const isPasswordValid = await bcrypt.compare(input.password, user.password);
+            if(!isPasswordValid){
+                throw new Error('Email or Password is invalid');
+            }
+            const secret = process.env.JWT_SECRET_KEY;
+            const token = jwt.sign({ email: user.email }, secret, { expiresIn: "1d"});
+            return { token };
+        }catch(error){
+            console.error(error);
+            throw error;
+        }
     }
 }
 }

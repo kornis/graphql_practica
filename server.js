@@ -20,7 +20,8 @@ app.use(cors());
 
 const apolloServer = new ApolloServer({
     typeDefs,
-    resolvers
+    resolvers,
+    context:  {name:"hola"}
 })
 
 apolloServer.applyMiddleware({ app, path: '/graphql' });

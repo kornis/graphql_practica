@@ -6,6 +6,7 @@ const PORT = process.env.PORT || 3000;
 const resolvers = require('./resolvers');
 const typeDefs = require('./typeDefs');
 const { connection } = require('./database/util');
+const { verifyUser } = require('./helper/context');
 
 
 
@@ -21,7 +22,12 @@ app.use(cors());
 const apolloServer = new ApolloServer({
     typeDefs,
     resolvers,
-    context:  {name:"hola"}
+    context: ({ req }) => {
+        verifyUser(req);
+        return {
+            email: req.email
+        }
+    }
 })
 
 apolloServer.applyMiddleware({ app, path: '/graphql' });

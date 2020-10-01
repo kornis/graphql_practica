@@ -2,13 +2,16 @@ const { users, tasks } = require('../constants');
 const User = require('../database/models/user');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const { combineResolvers } = require('graphql-resolvers');
+const { isAuthenticated } = require('./middlewares');
 
 module.exports = { 
     Query: {
-    getUsers: (_,__, {name}) => {
-        console.log(name);
-        return users },
-    getUser: (_, { id }) => users.find(user => user.id === id),
+    getUsers: () => users,
+    getUser: combineResolvers(isAuthenticated, (_, { id }, { email }) => {
+        console.log("===", email);
+        return users.find(user => user.id === id)
+    }),
 
     },
 

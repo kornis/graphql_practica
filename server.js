@@ -7,6 +7,7 @@ const resolvers = require('./resolvers');
 const typeDefs = require('./typeDefs');
 const { connection } = require('./database/util');
 const { verifyUser } = require('./helper/context');
+const { isLoggedIn } = require('./resolvers/middlewares');
 
 
 
@@ -22,10 +23,11 @@ app.use(cors());
 const apolloServer = new ApolloServer({
     typeDefs,
     resolvers,
-    context: ({ req }) => {
-        verifyUser(req);
+    context: async ({ req }) => {
+        await verifyUser(req);
         return {
-            email: req.email
+            email: req.email,
+            loggedInUserId: req.loggedInUserId,
         }
     }
 })

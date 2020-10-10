@@ -14,12 +14,7 @@ type User {
     createdAt: Date!
 }
 
-type Task {
-    id: ID!
-    name: String!
-    completed: Boolean!
-    user: User!
-}
+
 
 input createUserInput {
     email: String!

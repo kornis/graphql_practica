@@ -13,7 +13,14 @@ type TaskFeed {
 
 type PageInfo {
     nextPageCursor: String
-    hasNextpage: Boolean
+    hasNextPage: Boolean
+}
+
+type Task {
+    id: ID!
+    name: String!
+    completed: Boolean!
+    user: User!
 }
 
 input createTaskInput {

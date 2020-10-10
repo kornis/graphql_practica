@@ -4,6 +4,7 @@ const { isAuthenticated, isTaskOwner } = require('./middlewares');
 const { combineResolvers } = require('graphql-resolvers');
 const { base64ToString, stringToBase64 } = require('../helper');
 
+
 module.exports = {
     Query: {
         getTask:combineResolvers(isAuthenticated, isTaskOwner, async( _,{ id } ) => {
@@ -19,13 +20,16 @@ module.exports = {
             try{
                 const query = { user: loggedInUserId };
                 if(cursor){
-                    query['_id']= {
+                    query['_id'] = {
                         '$lt': base64ToString(cursor)
                     }
                 }
-                const tasks = await Task.find(query).sort({_id: -1}).limit(limit + 1);
+                let tasks = await Task.find(query).sort({_id: -1}).limit(limit + 1);
+                console.log("cantidad de tasks",tasks.length)
                 const hasNextPage = tasks.length > limit;
+                console.log("has next page?", hasNextPage)
                 tasks = hasNextPage ? tasks.slice(0, -1) : tasks;
+                console.log("has next page?", hasNextPage)
                 return {
                     taskFeed: tasks,
                     pageInfo: {
@@ -40,7 +44,15 @@ module.exports = {
         }),
     },
     Task: {
-        user: ( {userId} ) => users.find(user => user.id === userId)
+        user: async (parent, _, { loaders }) => {
+            try{
+                const user = await loaders.user.load(parent.user.toString());
+                return user;
+            }catch(error){
+                console.error(error);
+                throw error;
+            }
+        }
     },
     
     Mutation: {

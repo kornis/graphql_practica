@@ -7,7 +7,9 @@ const resolvers = require('./resolvers');
 const typeDefs = require('./typeDefs');
 const { connection } = require('./database/util');
 const { verifyUser } = require('./helper/context');
-const { isLoggedIn } = require('./resolvers/middlewares');
+const loaders = require('./loaders');
+const DataLoader = require('dataloader');
+
 
 
 
@@ -28,6 +30,9 @@ const apolloServer = new ApolloServer({
         return {
             email: req.email,
             loggedInUserId: req.loggedInUserId,
+            loaders: {
+                user: new DataLoader(keys => loaders.user.batchUsers(keys))
+            }
         }
     }
 })
